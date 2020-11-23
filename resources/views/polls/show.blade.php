@@ -8,15 +8,15 @@
     <form method="POST" action="{{ route('polls.vote', $poll) }}">
         @csrf
 
-        <label for="choice_1">
-            <input type="radio" id="choice_1" name="choice" value="choice_1"> {{ $poll->choice_1 }}
+        @foreach($poll->choices as $index => $choice)
+        <label for="choice_{{ $index }}">
+            <input type="radio" id="choice_{{ $index }}" name="choice" value="{{ $choice->id }}"> {{ $choice->text }}
         </label><br>
-        <label for="choice_2">
-            <input type="radio" id="choice_2" name="choice" value="choice_2"> {{ $poll->choice_2 }}
-        </label><br>
-        <label for="choice_3">
-            <input type="radio" id="choice_3" name="choice" value="choice_3"> {{ $poll->choice_3 }}
-        </label><br>
+        @endforeach
+
+        @error('choice')
+            <p style="color: red; font-style: italic;">{{ $message }}</p>
+        @enderror
 
         <br>
 
@@ -24,4 +24,8 @@
             <button type="submit">Submit</button>
         </div>
     </form>
+
+    <p>
+        <a href="{{ route('polls.results', $poll) }}">📈 See poll's results</a>
+    </p>
 @endsection

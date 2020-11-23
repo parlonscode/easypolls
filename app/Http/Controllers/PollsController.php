@@ -25,17 +25,25 @@ class PollsController extends Controller
 
     public function store()
     {
-        $poll = new Poll;
+        session()->put('next-choice-id', request('next-choice-id'));
 
-        $poll->question_text = request('question_text');
-        $poll->choice_1 = request('question_choice_1');
-        $poll->choice_2 = request('question_choice_2');
-        $poll->choice_3 = request('question_choice_3');
+        $validatedData = request()->validate([
+            'question_text' => 'required|string|min:4',
+            'choices' => 'required|array|min:2',
+            'choices.*' => 'required|string',
+        ]);
 
-        $poll->save();
+        $poll = Poll::create([
+            'question_text' => $validatedData['question_text']
+        ]);
 
-        session()->flash('notification.success', 'Sondage créé avec succès!');
+        foreach ($validatedData['choices'] as $choice) {
+            $poll->choices()->create(['text' => $choice]);
+        }
 
-        return redirect(route('polls.show', $poll));
+        session()->forget('next-choice-id');
+
+        return redirect()->route('polls.show', $poll)
+            ->with('notification.success', 'Sondage créé avec succès!');
     }
 }

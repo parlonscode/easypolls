@@ -3,23 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Poll;
+use App\Models\Choice;
+use Illuminate\Validation\Rule;
 
 class PollVotesController extends Controller
 {
     public function __invoke(Poll $poll)
     {
-        if (request('choice') === 'choice_1') {
-            $poll->increment('choice_1_votes');
-        } else if (request('choice') === 'choice_2') {
-            $poll->increment('choice_2_votes');
-        } else if (request('choice') === 'choice_3') {
-            $poll->increment('choice_3_votes');
-        } else {
-            throw new \LogicException('Invalid choice!');
-        }
+        request()->validate([
+            'choice' => ['required', Rule::in($poll->choices()->pluck('id')->toArray())]
+        ]);
 
-        session()->flash('notification.success', 'Merci d\'avoir répondu à ce sondage!');
+        $poll->choices()->findOrFail(request('choice'))->increment('votes');
 
-        return redirect(route('polls.results', $poll));
+        return redirect()->route('polls.results', $poll)
+            ->with('notification.success', 'Merci d\'avoir répondu à ce sondage!');
     }
 }
