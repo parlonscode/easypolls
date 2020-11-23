@@ -17,7 +17,7 @@
             <h3>Choices</h3>
 
             <template id="js-new-choice-template">
-                <input type="text" name="choices[]" placeholder="Enter choice" value="" required><br>
+                <input type="text" name="choices[]" placeholder="Enter choice" required><br>
             </template>
 
             <div id="js-choices">
