@@ -21,13 +21,12 @@
             </template>
 
             <div id="js-choices">
-                <input id="js-next-choice-id" name="next-choice-id" type="hidden" value="{{ session('next-choice-id', 3) }}">
-                @for($i = 0; $i < session('next-choice-id', 3); $i++)
+                @foreach(old('choices', range(0, 2)) as $i => $choice)
                     <input type="text" name="choices[]" placeholder="Enter choice" value="{{ old('choices.' . $i) }}" required><br>
                     @error('choices.' . $i)
                         <p style="color: red; font-style: italic;">{{ $message }}</p>
                     @enderror
-                @endfor
+                @endforeach
             </div>
 
             <button type="button" onclick="addChoice()">&plus; Add choice</button>
@@ -44,12 +43,8 @@
 <script>
     function addChoice() {
         const newChoiceTemplate = document.querySelector('#js-new-choice-template');
-        const nextIdInput = document.querySelector('#js-next-choice-id');
-        let nextChoiceId = parseInt(nextIdInput.value);
         const choicesDiv = document.querySelector('#js-choices');
 
         choicesDiv.appendChild(newChoiceTemplate.content.cloneNode(true));
-
-        nextIdInput.value = ++nextChoiceId;
     }
 </script>

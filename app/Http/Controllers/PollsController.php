@@ -25,8 +25,6 @@ class PollsController extends Controller
 
     public function store()
     {
-        session()->put('next-choice-id', request('next-choice-id'));
-
         $validatedData = request()->validate([
             'question_text' => 'required|string|min:4',
             'choices' => 'required|array|min:2',
@@ -40,8 +38,6 @@ class PollsController extends Controller
         foreach ($validatedData['choices'] as $choice) {
             $poll->choices()->create(['text' => $choice]);
         }
-
-        session()->forget('next-choice-id');
 
         return redirect()->route('polls.show', $poll)
             ->with('notification.success', 'Sondage créé avec succès!');
