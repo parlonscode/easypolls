@@ -14,6 +14,12 @@ class PollVotesController extends Controller
             'choice' => ['required', Rule::in($poll->choices()->pluck('id')->toArray())]
         ]);
 
+        // ## Use it for race conditions tests
+        // $choice = $poll->choices()->findOrFail(request('choice'));
+        // logger()->debug('** BEFORE ' . request('user_id') . '**' . $choice->votes);
+        // $poll->choices()->findOrFail(request('choice'))->increment('votes');
+        // logger()->debug('** AFTER ' . request('user_id') . '**' . $choice->fresh()->votes);
+
         $poll
             ->choices()
             ->lockForUpdate()
