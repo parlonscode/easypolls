@@ -14,7 +14,11 @@ class PollVotesController extends Controller
             'choice' => ['required', Rule::in($poll->choices()->pluck('id')->toArray())]
         ]);
 
-        $poll->choices()->findOrFail(request('choice'))->increment('votes');
+        $poll
+            ->choices()
+            ->lockForUpdate()
+            ->findOrFail(request('choice'))
+            ->increment('votes');
 
         return redirect()->route('polls.results', $poll)
             ->with('notification.success', 'Merci d\'avoir répondu à ce sondage!');

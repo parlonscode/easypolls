@@ -20,3 +20,4 @@ Route::post('/polls/{poll}/vote', PollVotesController::class)
 
 Route::get('/polls/{poll}/results', PollResultsController::class)
     ->name('polls.results');
+
