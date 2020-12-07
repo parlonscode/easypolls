@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Poll;
 use App\Models\Choice;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class PollVotesController extends Controller
 {
@@ -20,11 +21,16 @@ class PollVotesController extends Controller
         // $poll->choices()->findOrFail(request('choice'))->increment('votes');
         // logger()->debug('** AFTER ' . request('user_id') . '**' . $choice->fresh()->votes);
 
-        $poll
-            ->choices()
-            ->lockForUpdate()
-            ->findOrFail(request('choice'))
+        DB::table('choices')
+            ->where('id', request('choice'))
+            ->sharedLock()
             ->increment('votes');
+
+        // $poll
+        //     ->choices()
+        //     ->findOrFail(request('choice'))
+        //     ->sharedLock()
+        //     ->increment('votes');
 
         return redirect()->route('polls.results', $poll)
             ->with('notification.success', 'Merci d\'avoir répondu à ce sondage!');
