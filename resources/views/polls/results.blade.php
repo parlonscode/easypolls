@@ -5,6 +5,8 @@
 
     <h2>{{ $poll->question_text }}</h2>
 
+    <livewire:poll-chart />
+
     <ul>
         @foreach($poll->choices as $choice)
         <li>{{ $choice->text }}: <b>{{ $choice->votes }} {{ Str::plural('vote', $choice->votes) }}</b></li>
