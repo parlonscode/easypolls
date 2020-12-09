@@ -27,7 +27,7 @@ class PollsController extends Controller
     {
         $validatedData = request()->validate([
             'question_text' => 'required|string|min:4',
-            'choices' => 'required|array|min:2',
+            'choices' => 'required|array|min:2|max:' . config('project.max_number_of_answers'),
             'choices.*' => 'required|string',
         ]);
 

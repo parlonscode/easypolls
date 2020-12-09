@@ -17,17 +17,25 @@
             <h3>Choices</h3>
 
             <template id="js-new-choice-template">
-                <input type="text" name="choices[]" placeholder="Enter choice" required><br>
+                <div>
+                    <input type="text" name="choices[]" placeholder="Enter choice" required><br>
+                </div><button type="button" onclick="handleRemove(this)">&times; Remove</button>
             </template>
 
             <div id="js-choices">
                 @foreach(old('choices', range(0, 2)) as $i => $choice)
-                    <input type="text" name="choices[]" placeholder="Enter choice" value="{{ old('choices.' . $i) }}" required><br>
+                    <div>
+                        <input type="text" name="choices[]" placeholder="Enter choice" value="{{ old('choices.' . $i) }}" required><br>
+                    </div><button type="button" onclick="handleRemove(this)">&times; Remove</button>
                     @error('choices.' . $i)
                         <p style="color: red; font-style: italic;">{{ $message }}</p>
                     @enderror
                 @endforeach
             </div>
+
+            @error('choices')
+                <p style="color: red; font-style: italic;">{{ $message }}</p>
+            @enderror
 
             <button type="button" onclick="addChoice()">&plus; Add choice</button>
         </div>
@@ -41,6 +49,11 @@
 @endsection
 
 <script>
+    function handleRemove(button) {
+        button.previousSibling.remove();
+        button.remove();
+    }
+
     function addChoice() {
         const newChoiceTemplate = document.querySelector('#js-new-choice-template');
         const choicesDiv = document.querySelector('#js-choices');
