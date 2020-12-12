@@ -17,8 +17,8 @@ class PollVotesController extends Controller
 
         try {
             DB::transaction(function() {
-                Choice::findOrFail(request('choice'))
-                    ->lockForUpdate()
+                Choice::lockForUpdate()
+                    ->findOrFail(request('choice'))
                     ->increment('votes');
             });
         } catch (\Exception $e) {
