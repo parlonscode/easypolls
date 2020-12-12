@@ -15,22 +15,15 @@ class PollVotesController extends Controller
             'choice' => ['required', Rule::in($poll->choices()->pluck('id')->toArray())]
         ]);
 
-        // ## Use it for race conditions tests
-        // $choice = $poll->choices()->findOrFail(request('choice'));
-        // logger()->debug('** BEFORE ' . request('user_id') . '**' . $choice->votes);
-        // $poll->choices()->findOrFail(request('choice'))->increment('votes');
-        // logger()->debug('** AFTER ' . request('user_id') . '**' . $choice->fresh()->votes);
-
-        DB::table('choices')
-            ->where('id', request('choice'))
-            ->sharedLock()
-            ->increment('votes');
-
-        // $poll
-        //     ->choices()
-        //     ->findOrFail(request('choice'))
-        //     ->sharedLock()
-        //     ->increment('votes');
+        try {
+            DB::transaction(function() {
+                Choice::findOrFail(request('choice'))
+                    ->lockForUpdate()
+                    ->increment('votes');
+            });
+        } catch (\Exception $e) {
+            logger()->debug('** ERROR: An error occured **');
+        }
 
         return redirect()->route('polls.results', $poll)
             ->with('notification.success', 'Merci d\'avoir répondu à ce sondage!');
